@@ -17,12 +17,15 @@ const main = async () => {
 				const lugar = await leerInput('Cuidad: ');
 				// buscar lugar
 				const lugares = await busquedas.cuidad(lugar);
-
 				// seleccionar lugar
 				const idSeleccionado = await listarLugares(lugares);
+				if(idSeleccionado === '0') continue;
 				const lugarSeleccionado = lugares.find(
 					(sitio) => idSeleccionado === sitio.id
 				);
+				// guardar 
+				console.log(lugarSeleccionado.name);
+				busquedas.guardarHistorial(lugarSeleccionado.name);
 				// mostrar resultado
 				console.log(`\nCuidad: ${lugarSeleccionado.name}\n`);
 				console.log(`\nLat: ${lugarSeleccionado.lat}\n`);
@@ -38,7 +41,16 @@ const main = async () => {
 				console.log(`\nDescripción: ${tempeLugar.desc}\n`);
 
 				break;
+			case '2':
+				// cargar data json
+				busquedas.leerHistorial();
+				busquedas.historial.forEach((item, i) =>{
+					const idx = `${i+1}. `
+					console.log(`${idx} ${item}`)
+				});
+				break;
 		}
+
 		if (opt !== 0) {
 			await pausa();
 		}

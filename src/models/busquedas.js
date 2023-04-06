@@ -1,9 +1,12 @@
+import {appendFileSync, existsSync, readFileSync, writeFileSync}  from 'node:fs'
 import axios from 'axios';
 import * as dotenv from 'dotenv';
+import { threadId } from 'node:worker_threads';
 dotenv.config();
 // import axios from 'axios';
 export class Busqueda {
 	historial = [];
+	dbPath = './db/database.json';
 
 	get paramsMapbox() {
 		return {
@@ -60,7 +63,6 @@ export class Busqueda {
 			});
 			// extraer la data
 			const res = await instance.get();
-			console.log();
 			// retornarla
 
 			return {
@@ -72,5 +74,34 @@ export class Busqueda {
 		} catch (error) {
 			console.log(error);
 		}
+	}
+
+	guardarHistorial(lugar = '') {
+		const corte = (lugar.length - lugar.search(','));
+		const shortNameLugar = lugar.slice(0,-corte);
+		// if((this.historial.includes(shortNameLugar.toLocaleLowerCase()))) return;
+		console.log('ShortNAme: ' ,shortNameLugar);
+		this.historial.unshift(shortNameLugar.toLocaleLowerCase());
+
+		this.guardarEnDB();
+	}
+
+	leerHistorial() {
+		if(!existsSync(this.dbPath)) return;
+		// leer data
+		const data = readFileSync(this.dbPath, {encoding: 'utf-8'});
+
+		// parsear data
+		if(!data) return;
+		// convierte el json a objeto js
+		const info = JSON.parse(data);
+		this.historial = info.historial;
+	}
+
+	guardarEnDB() {
+		const payload = {
+			historial: this.historial
+		}
+		writeFileSync(this.dbPath, JSON.stringify(payload));
 	}
 }
