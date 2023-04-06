@@ -24,11 +24,14 @@ export class Busqueda {
 				baseURL: `https://api.mapbox.com/geocoding/v5/mapbox.places/${lugar}.json?`,
 				params: this.paramsMapbox,
 			});
-
-			// const res = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lugar}.json?language=es&access_token=pk.eyJ1IjoiMjctamVzdGViYW5zYW4yOCIsImEiOiJjbGc0aGp2b3YwNW5tM2RrOTlsa2Fhb2J6In0.WfuZHPFvkgb1WDLGQLlTcg`);
 			const resInst = await instancia.get();
-			console.log(resInst);
-			// console.log(res.data);
+			return resInst.data.features.map(item => ({
+				id: item.id,
+				name: item.place_name,
+				lng: item.center[0],
+				lat: item.center[1]
+
+			}));
 		} catch (error) {
 			if (error.response) {
 				// The request was made and the server responded with a status code

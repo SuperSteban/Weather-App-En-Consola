@@ -1,4 +1,4 @@
-import { inquirerMenu, leerInput, pausa } from './src/helpers/inquirer.js';
+import { inquirerMenu, leerInput, listarLugares, pausa } from './src/helpers/inquirer.js';
 import { Busqueda } from './src/models/busquedas.js';
 
 
@@ -7,24 +7,23 @@ const main = async () => {
 	let opt;
 	do {
 		opt = await inquirerMenu();
-		let lugar = '';
 		switch (opt) {
 			case '1':
 				// mostrar mensaje
-				lugar = await leerInput('Cuidad: ');
-				console.log(lugar);
-				await pausa();
+				const lugar = await leerInput('Cuidad: ');
 				// buscar lugar
-				await busquedas.cuidad(lugar);
+				const lugares = await busquedas.cuidad(lugar);
+				
 				// seleccionar lugar
+				const idSeleccionado = await listarLugares(lugares);
+				const lugarSeleccionado = lugares.find(sitio => idSeleccionado === sitio.id);
 				// mostrar resultado
-				console.log(`\nCuidad: \n`);
-				console.log(`\nLat: \n`);
-				console.log(`\nLng: \n`);
+				console.log(`\nCuidad: ${lugarSeleccionado.name}\n`);
+				console.log(`\nLat: ${lugarSeleccionado.lat}\n`);
+				console.log(`\nLng: ${lugarSeleccionado.lng}\n`);
 				console.log(`\nTemperatura : \n`);
 				console.log(`\nTemperatura Max: \n`);
-				console.log(`\nTemperatura Min: \n`);
-
+				console.log(`\nTemperatura Min: \n`); 
 				break;
 		}
 		if (opt !== 0) {
