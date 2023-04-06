@@ -1,15 +1,15 @@
 import axios from 'axios';
-import * as dotenv from 'dotenv'
-dotenv.config()
+import * as dotenv from 'dotenv';
+dotenv.config();
 // import axios from 'axios';
 export class Busqueda {
 	historial = [];
 
 	get paramsMapbox() {
 		return {
-			'access_token': process.env.MAP_BOX_KEY,
-			'limit': 5,
-			'language': 'es',
+			access_token: process.env.MAP_BOX_KEY,
+			limit: 5,
+			language: 'es',
 		};
 	}
 
@@ -24,11 +24,13 @@ export class Busqueda {
 				baseURL: `https://api.mapbox.com/geocoding/v5/mapbox.places/${lugar}.json?`,
 				params: this.paramsMapbox,
 			});
-
-			// const res = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lugar}.json?language=es&access_token=pk.eyJ1IjoiMjctamVzdGViYW5zYW4yOCIsImEiOiJjbGc0aGp2b3YwNW5tM2RrOTlsa2Fhb2J6In0.WfuZHPFvkgb1WDLGQLlTcg`);
 			const resInst = await instancia.get();
-			console.log(resInst);
-			// console.log(res.data);
+			return resInst.data.features.map((item) => ({
+				id: item.id,
+				name: item.place_name,
+				lng: item.center[0],
+				lat: item.center[1],
+			}));
 		} catch (error) {
 			if (error.response) {
 				// The request was made and the server responded with a status code
@@ -47,6 +49,28 @@ export class Busqueda {
 			}
 			console.log(error.config);
 			return [];
+		}
+	}
+
+	async climaDelLugar(lat, lon) {
+		try {
+			// instancia axios del lugar
+			const instance = axios.create({
+				baseURL: `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.OPEN_WEATHER_KEY}&units=metric&lang=es`,
+			});
+			// extraer la data
+			const res = await instance.get();
+			console.log();
+			// retornarla
+
+			return {
+				desc: res.data.weather[0].description,
+				min: res.data.main.temp_min,
+				max: res.data.main.temp_max,
+				temp: res.data.main.temp,
+			};
+		} catch (error) {
+			console.log(error);
 		}
 	}
 }
