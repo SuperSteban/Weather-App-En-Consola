@@ -11,6 +11,6 @@
 	},
 	"rules": {
 		"class-methods-use-this": "off",
-		"no-case-declarations":"off"
+		"no-case-declarations": "off"
 	}
 }

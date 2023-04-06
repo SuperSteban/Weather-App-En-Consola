@@ -1,15 +1,15 @@
 import axios from 'axios';
-import * as dotenv from 'dotenv'
-dotenv.config()
+import * as dotenv from 'dotenv';
+dotenv.config();
 // import axios from 'axios';
 export class Busqueda {
 	historial = [];
 
 	get paramsMapbox() {
 		return {
-			'access_token': process.env.MAP_BOX_KEY,
-			'limit': 5,
-			'language': 'es',
+			access_token: process.env.MAP_BOX_KEY,
+			limit: 5,
+			language: 'es',
 		};
 	}
 
@@ -25,12 +25,11 @@ export class Busqueda {
 				params: this.paramsMapbox,
 			});
 			const resInst = await instancia.get();
-			return resInst.data.features.map(item => ({
+			return resInst.data.features.map((item) => ({
 				id: item.id,
 				name: item.place_name,
 				lng: item.center[0],
-				lat: item.center[1]
-
+				lat: item.center[1],
 			}));
 		} catch (error) {
 			if (error.response) {
@@ -50,6 +49,28 @@ export class Busqueda {
 			}
 			console.log(error.config);
 			return [];
+		}
+	}
+
+	async climaDelLugar(lat, lon) {
+		try {
+			// instancia axios del lugar
+			const instance = axios.create({
+				baseURL: `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.OPEN_WEATHER_KEY}&units=metric&lang=es`,
+			});
+			// extraer la data
+			const res = await instance.get();
+			console.log();
+			// retornarla
+
+			return {
+				desc: res.data.weather[0].description,
+				min: res.data.main.temp_min,
+				max: res.data.main.temp_max,
+				temp: res.data.main.temp,
+			};
+		} catch (error) {
+			console.log(error);
 		}
 	}
 }

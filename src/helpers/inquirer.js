@@ -82,7 +82,6 @@ export const listarLugares = async (lugares = []) => {
 	const { id } = await inquirer.prompt(preguntas);
 
 	return id;
-
 };
 export const CompletadoCheckList = async (tareas = []) => {
 	const choices = tareas.map((tarea, i) => {
